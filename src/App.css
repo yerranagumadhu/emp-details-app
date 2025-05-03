@@ -36,3 +36,57 @@
     transform: rotate(360deg);
   }
 }
+
+
+
+
+/* emp-details-app/src/App.css */
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #f0f2f5;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.card {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 600px;
+}
+
+.details h2 {
+  margin-bottom: 20px;
+}
+
+.info {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+.warning {
+  color: darkorange;
+  padding: 30px;
+  text-align: center;
+  font-size: 18px;
+}
+
+.error {
+  color: red;
+  padding: 30px;
+  text-align: center;
+  font-size: 18px;
+}
+
+.loading {
+  padding: 30px;
+  text-align: center;
+  font-size: 16px;
+}
