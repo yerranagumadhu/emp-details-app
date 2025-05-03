@@ -1,70 +1,62 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Employee Details Viewer (App 2)
 
-## Available Scripts
+This React application is responsible for displaying detailed information about a specific employee based on their ID. It is designed to be opened in a new tab from App 1 (Employee Search App) and enforces restrictions to prevent users from opening multiple employee detail views simultaneously.
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- Fetches employee details using their ID via a Django REST API.
+- Redirects unauthenticated users to the Okta SAML SSO login.
+- Prevents multiple tabs from opening different employee records.
+- Displays detailed employee information including department, job title, salary, and hire date.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Setup Instructions
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 1. Clone the repository
 
-### `npm test`
+```bash
+git clone <your-repo-url>
+cd app2
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 2. Install dependencies
 
-### `npm run build`
+```bash
+npm install
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 3. Run the app
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+npm start
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+> This will start the application on [http://localhost:3001](http://localhost:3001)
 
-### `npm run eject`
+## Environment Requirements
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- Node.js >= 14.x
+- React >= 18.x
+- Backend Django API with Okta SSO protection running on [http://localhost:8000](http://localhost:8000)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Key Functionalities
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- Uses `localStorage` to track the currently viewed employee ID.
+- Redirects to Okta login if the session is not authenticated.
+- Automatically returns to the current tab (RelayState) after successful authentication.
+- Handles errors and warnings gracefully (e.g., when trying to open another employee in a new tab).
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Sample API Endpoint
 
-## Learn More
+```
+GET http://localhost:8000/employee/api/<empId>/
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Security Note
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- RelayState parameter is passed to Django during SSO login to redirect users back to the correct React tab after authentication.
+- LocalStorage key `openEmpId` is used to prevent concurrent viewing of different employee records.
 
-### Code Splitting
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is licensed under the MIT License.
