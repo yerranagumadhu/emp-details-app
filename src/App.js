@@ -10,6 +10,7 @@ function App() {
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const id = queryParams.get("empId");
+    console.log("Employee ID from URL:", empId);
 
     // No employee ID provided, show a warning
     if (!id) {
