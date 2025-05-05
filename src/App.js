@@ -1,98 +1,55 @@
-import React, { useEffect, useState } from "react";
-import "./App.css";
+// App.js
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { TabPanel } from "devextreme-react/tab-panel";
+import EmpDetails from "./EmpDetails";
+import AddEmp from "./AddEmp";
+import ListEmp from "./ListEmp";
+import UpdateEmp from "./UpdateEmp";
+import './App.css';
+import 'devextreme/dist/css/dx.light.css'; // or another theme
 
-function App() {
-  const [empId, setEmpId] = useState(null);
-  const [details, setDetails] = useState(null);
-  const [error, setError] = useState(null);
-  const [warning, setWarning] = useState(null);
 
-  useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const id = queryParams.get("empId");
-    console.log("Employee ID from URL:", empId);
+function TabRouter() {
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    // No employee ID provided, show a warning
-    if (!id) {
-      setWarning("No Employee ID provided.");
-      return;
-    }
+  const tabs = [
+    { title: "👤 EMP Details", path: "/details" },
+    { title: "➕ Add New EMP", path: "/add" },
+    { title: "📋 List All EMPs", path: "/list" },
+    { title: "✏️ Update EMP", path: "/update" },
+  ];
 
-    // Check if another employee's details are open in another tab
-    const existingEmpId = localStorage.getItem("openEmpId");
-
-    if (existingEmpId && existingEmpId !== id) {
-      setWarning(
-        `Another employee's details (ID: ${existingEmpId}) are already open in a tab. You cannot open multiple employee profiles.`
-      );
-      return; // 🛑 Prevent loading a different profile
-    }
-
-    setEmpId(id);
-    localStorage.setItem("openEmpId", id); // ✅ Set only after validation
-
-    // Check authentication before proceeding
-    fetch("http://localhost:8000/sso/saml/check-auth/", {
-      credentials: "include", // Important for sending cookies/session
-    })
-      .then((res) => {
-        if (res.status === 401) {
-          // If not authenticated, redirect to SSO login
-          // 🔄 Redirect to SSO login with RelayState back to this app
-          const redirectUrl = `http://localhost:8000/sso/saml/login/?RelayState=${encodeURIComponent(window.location.href)}`;
-          window.location.href = redirectUrl;
-          return;
-        }
-        return res.json();
-      })
-      .then(() => {
-        // Fetch employee details after successful authentication
-        fetch(`http://localhost:8000/employee/api/${id}/`, {
-          credentials: "include",
-        })
-          .then((res) => {
-            if (!res.ok) throw new Error("Employee not found");
-            return res.json();
-          })
-          .then((data) => setDetails(data))
-          .catch((err) => setError(err.message));
-      });
-
-    // Cleanup function to remove the open employee ID on page unload
-    const clearOnUnload = () => {
-      if (localStorage.getItem("openEmpId") === id) {
-        localStorage.removeItem("openEmpId");
-      }
-    };
-
-    window.addEventListener("beforeunload", clearOnUnload);
-
-    return () => {
-      clearOnUnload();
-      window.removeEventListener("beforeunload", clearOnUnload);
-    };
-  }, []);
-
-  // Conditional rendering based on the state
-  if (warning) return <p style={{ color: "orange" }}>{warning}</p>;
-  if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
-  if (!details) return <p>Loading employee details...</p>;
+  const currentIndex = tabs.findIndex((t) => location.pathname.includes(t.path));
 
   return (
-    <div className="container">
-      <div className="card details">
-        <h2>👤 Employee Details</h2>
-        <div className="info"><strong>ID:</strong> {details.id}</div>
-        <div className="info"><strong>Name:</strong> {details.first_name} {details.last_name}</div>
-        <div className="info"><strong>Email:</strong> {details.email}</div>
-        <div className="info"><strong>Phone:</strong> {details.phone}</div>
-        <div className="info"><strong>Department:</strong> {details.department.name} ({details.department.location})</div>
-        <div className="info"><strong>Job Title:</strong> {details.job_title.title}</div>
-        <div className="info"><strong>Description:</strong> {details.job_title.description}</div>
-        <div className="info"><strong>Salary:</strong> ${parseFloat(details.salary).toFixed(2)}</div>
-        <div className="info"><strong>Hire Date:</strong> {details.hire_date}</div>
+    <div className="app-container">
+      <h1 className="title">🏢 Employee Management Portal</h1>
+      <TabPanel
+        items={tabs.map((tab) => ({ title: tab.title }))}
+        selectedIndex={currentIndex}
+        onSelectionChanged={(e) => navigate(tabs[e.component.option("selectedIndex")].path)}
+        deferRendering={false}
+        elementAttr={{ class: 'custom-tabs' }}
+      />
+      <div className="tab-content">
+        <Routes>
+          <Route path="/details" element={<EmpDetails />} />
+          <Route path="/add" element={<AddEmp />} />
+          <Route path="/list" element={<ListEmp />} />
+          <Route path="/update" element={<UpdateEmp />} />
+        </Routes>
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <TabRouter />
+    </Router>
   );
 }
 
